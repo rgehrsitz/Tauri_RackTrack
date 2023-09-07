@@ -13,7 +13,8 @@
   "dependencies": {
     "@tauri-apps/api": "^1.4.0",
     "isomorphic-git": "^1.24.5",
-    "simple-git": "^3.19.1"
+    "simple-git": "^3.19.1",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.22.15",
