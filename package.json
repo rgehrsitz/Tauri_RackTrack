@@ -11,7 +11,9 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.4.0"
+    "@tauri-apps/api": "^1.4.0",
+    "isomorphic-git": "^1.24.5",
+    "simple-git": "^3.19.1"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.22.15",
