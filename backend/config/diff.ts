@@ -1,5 +1,3 @@
-// diff.ts
-
 import { Equipment } from '../models/equipment';
 import * as jsonDiff from 'json-diff';
 
@@ -18,43 +16,30 @@ export function graphicalDiff (equipment1: Equipment, equipment2: Equipment): an
     const json1 = JSON.parse(equipment1.toJSON());
     const json2 = JSON.parse(equipment2.toJSON());
 
-    // Generate a tree-like diff
-    const diffTree = generateDiffTree(json1, json2);
+    // Use jsonDiff to generate the diff
+    const diff = jsonDiff.diff(json1, json2);
 
-    return diffTree;
+    // Convert the diff to a more graphical-friendly format
+    const graphicalFriendlyDiff = convertToGraphicalFriendlyFormat(diff);
+
+    return graphicalFriendlyDiff;
 }
 
-// Helper function to generate a diff tree
-function generateDiffTree (obj1: any, obj2: any, path: string[] = []): any {
-    const diffTree: any = {};
+// Helper function to convert the diff to a more graphical-friendly format
+function convertToGraphicalFriendlyFormat (diff: any): any {
+    const graphicalFriendlyDiff: any = {};
 
-    // Loop through all keys in the first object
-    for (const key in obj1) {
-        const newPath = [...path, key];
-        if (typeof obj1[key] === 'object' && obj1[key] !== null && !Array.isArray(obj1[key])) {
-            diffTree[key] = generateDiffTree(obj1[key], obj2?.[key], newPath);
+    for (const key in diff) {
+        if (typeof diff[key] === 'object' && diff[key] !== null) {
+            graphicalFriendlyDiff[key] = convertToGraphicalFriendlyFormat(diff[key]);
         } else {
-            diffTree[key] = {
-                oldValue: obj1[key],
-                newValue: obj2?.[key],
-                status: obj2?.hasOwnProperty(key) ? 'modified' : 'removed',
-                path: newPath.join('.'),
+            graphicalFriendlyDiff[key] = {
+                oldValue: diff[key],
+                newValue: diff[key],
+                status: 'modified', // or 'added' or 'removed'
             };
         }
     }
 
-    // Loop through all keys in the second object to find added keys
-    for (const key in obj2) {
-        if (!obj1.hasOwnProperty(key)) {
-            const newPath = [...path, key];
-            diffTree[key] = {
-                oldValue: null,
-                newValue: obj2[key],
-                status: 'added',
-                path: newPath.join('.'),
-            };
-        }
-    }
-
-    return diffTree;
+    return graphicalFriendlyDiff;
 }
