@@ -88,7 +88,7 @@ export class Equipment {
         equipment.uuid = obj.uuid;
         equipment.dateTimeCreated = new Date(obj.dateTimeCreated);
         equipment.dateTimeUpdated = new Date(obj.dateTimeUpdated);
-        equipment.children = obj.children.map((child: any) => Equipment.fromJSON(JSON.stringify(child)));
+        equipment.children = obj.children ? obj.children.map((child: any) => Equipment.fromJSON(JSON.stringify(child))) : [];
         return equipment;
     }
 

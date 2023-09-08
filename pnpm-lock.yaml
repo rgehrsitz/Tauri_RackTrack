@@ -34,6 +34,9 @@ devDependencies:
   '@types/jest':
     specifier: ^29.5.4
     version: 29.5.4
+  '@types/json-diff':
+    specifier: ^1.0.0
+    version: 1.0.0
   jest:
     specifier: ^29.6.4
     version: 29.6.4
@@ -1143,6 +1146,10 @@ packages:
     dependencies:
       expect: 29.6.4
       pretty-format: 29.6.3
+    dev: true
+
+  /@types/json-diff@1.0.0:
+    resolution: {integrity: sha512-dCXC1F73Sqriz2d8Wt/sP/DztE+rlfIRPxW9WSYheHp/l3gvkeSvM6l4vhm7t4Dgn8AJAxNKajx/eobbPdP6Wg==}
     dev: true
 
   /@types/node@20.5.9:
