@@ -1,4 +1,4 @@
-import { uuid } from 'uuidv4';
+import { uuid as generateUuid } from 'uuidv4';
 
 interface UserDefinedProperties {
     [key: string]: any;
@@ -30,14 +30,17 @@ export class Equipment {
         type: string,
         description = '',
         userDefinedProperties: UserDefinedProperties = {},
-        children: Equipment[] = []
+        children: Equipment[] = [],
+        uuid?: string,
+        dateTimeCreated?: Date,
+        dateTimeUpdated?: Date
     ) {
-        this.uuid = uuid();
+        this.uuid = uuid || generateUuid();
         this.name = name;
         this.description = description;
         this.type = type;
-        this.dateTimeCreated = new Date();
-        this.dateTimeUpdated = new Date();
+        this.dateTimeCreated = dateTimeCreated || new Date();
+        this.dateTimeUpdated = dateTimeUpdated || new Date();
         this.userDefinedProperties = userDefinedProperties;
         this.children = children;
     }
@@ -84,11 +87,22 @@ export class Equipment {
     // Deserialize from JSON
     static fromJSON (json: string): Equipment {
         const obj = JSON.parse(json);
-        const equipment = new Equipment(obj.name, obj.type, obj.description, obj.userDefinedProperties);
-        equipment.uuid = obj.uuid;
-        equipment.dateTimeCreated = new Date(obj.dateTimeCreated);
-        equipment.dateTimeUpdated = new Date(obj.dateTimeUpdated);
-        equipment.children = obj.children ? obj.children.map((child: any) => Equipment.fromJSON(JSON.stringify(child))) : [];
+        const equipment = new Equipment(
+            obj.name,
+            obj.type,
+            obj.description,
+            obj.userDefinedProperties,
+            [], // Initialize children as empty; we'll populate it later
+            obj.uuid,
+            obj.dateTimeCreated ? new Date(obj.dateTimeCreated) : undefined,
+            obj.dateTimeUpdated ? new Date(obj.dateTimeUpdated) : undefined
+        );
+
+        // If obj.children is an array of serialized Equipment objects
+        if (Array.isArray(obj.children)) {
+            equipment.children = obj.children.map((child: any) => Equipment.fromJSON(JSON.stringify(child)));
+        }
+
         return equipment;
     }
 
