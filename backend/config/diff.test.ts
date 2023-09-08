@@ -58,11 +58,50 @@ describe('Diff Module', () => {
             if (diff && diff.userDefinedProperties && diff.userDefinedProperties['newProp__added']) {
                 expect(diff.userDefinedProperties['newProp__added'].status).toBe('added');
             } else {
-                expect(true).toBe(false); // Indicate that the test has failed
+                fail('Diff did not detect added property');
             }
         });
 
+        it('should correctly identify modified properties', () => {
+            // Update a property in equipment1
+            equipment1.updateDetails(undefined, 'New Description');
+
+            // Generate the diff
+            const diff = graphicalDiff(equipment1, equipment2);
+
+            // Check if the status of the modified property is set to 'modified'
+            expect(diff.description.status).toBe('modified');
+        });
+
     });
+
+    it('should correctly identify differences in nested properties', () => {
+
+        // Add nested properties
+        equipment1.userDefinedProperties = {
+            serverDetails: {
+                memory: '16GB',
+                cpu: '2.4GHz'
+            }
+        };
+
+        // Change a nested property
+        equipment2.userDefinedProperties = {
+            serverDetails: {
+                memory: '32GB',
+                cpu: '2.4GHz'
+            }
+        };
+
+        // Generate diff
+        const diff = graphicalDiff(equipment1, equipment2);
+
+        // Check if nested property status is 'modified'
+        expect(diff.userDefinedProperties.serverDetails.memory.status).toBe('modified');
+
+    });
+
+
 
     afterEach(() => {
         jest.spyOn(Date, 'now').mockRestore();

@@ -42,6 +42,9 @@ function convertToGraphicalFriendlyFormat (diff: any, original: any = {}): any {
                 status: status,
             };
         }
+        if (original.hasOwnProperty(key)) {
+            graphicalFriendlyDiff[key].status = 'modified';
+        }
     }
 
     // Check for removed keys
