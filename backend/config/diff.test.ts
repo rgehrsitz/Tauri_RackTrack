@@ -1,5 +1,8 @@
 import { Equipment } from '../models/equipment';
 import { textualDiff, graphicalDiff } from './diff';
+import { uuid } from 'uuidv4';
+jest.mock('uuidv4');
+
 
 jest.mock('uuidv4', () => ({
     uuid: jest.fn(() => 'fixed-uuid'),
@@ -57,5 +60,4 @@ describe('Diff Module', () => {
             // Add more tests here
         });
     });
-
 });
