@@ -16,7 +16,7 @@ export class GitService {
     // Initialize a new Git repository
     async initRepo () {
         try {
-            console.log('Initializing repo');
+            //console.log('Initializing repo');
             await this.git.init();
         } catch (error) {
             console.error('Error initializing Git repository:', error);

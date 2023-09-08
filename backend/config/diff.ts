@@ -20,26 +20,41 @@ export function graphicalDiff (equipment1: Equipment, equipment2: Equipment): an
     const diff = jsonDiff.diff(json1, json2);
 
     // Convert the diff to a more graphical-friendly format
-    const graphicalFriendlyDiff = convertToGraphicalFriendlyFormat(diff);
+    const graphicalFriendlyDiff = convertToGraphicalFriendlyFormat(diff, json1);
 
     return graphicalFriendlyDiff;
 }
 
 // Helper function to convert the diff to a more graphical-friendly format
-function convertToGraphicalFriendlyFormat (diff: any): any {
+function convertToGraphicalFriendlyFormat (diff: any, original: any = {}): any {
     const graphicalFriendlyDiff: any = {};
 
+    if (!diff || !original) return graphicalFriendlyDiff;
+
     for (const key in diff) {
-        if (typeof diff[key] === 'object' && diff[key] !== null) {
-            graphicalFriendlyDiff[key] = convertToGraphicalFriendlyFormat(diff[key]);
+        if (diff[key] && typeof diff[key] === 'object') {
+            graphicalFriendlyDiff[key] = convertToGraphicalFriendlyFormat(diff[key], original[key] || {});
         } else {
+            const status = original && original.hasOwnProperty(key) ? 'modified' : 'added';
             graphicalFriendlyDiff[key] = {
-                oldValue: diff[key],
+                oldValue: original ? original[key] : null,
                 newValue: diff[key],
-                status: 'modified', // or 'added' or 'removed'
+                status: status,
+            };
+        }
+    }
+
+    // Check for removed keys
+    for (const key in original) {
+        if (original && !diff.hasOwnProperty(key)) {
+            graphicalFriendlyDiff[key] = {
+                oldValue: original[key],
+                newValue: null,
+                status: 'removed',
             };
         }
     }
 
     return graphicalFriendlyDiff;
 }
+

@@ -1,13 +1,11 @@
 import { Equipment } from '../models/equipment';
 import { textualDiff, graphicalDiff } from './diff';
-jest.mock('uuidv4');
-
 
 jest.mock('uuidv4', () => ({
     uuid: jest.fn(() => 'fixed-uuid'),
 }));
 
-Date.now = jest.fn(() => 1631294163057); // fixed date
+jest.spyOn(Date, 'now').mockImplementation(() => 1631294163057);
 
 
 describe('Diff Module', () => {
@@ -15,6 +13,8 @@ describe('Diff Module', () => {
     let equipment2: Equipment;
 
     beforeEach(() => {
+        jest.spyOn(Date, 'now').mockImplementation(() => 1631294163057);
+
         equipment1 = new Equipment('Server1', 'Server');
         equipment2 = new Equipment('Server1', 'Server');
     });
@@ -26,39 +26,45 @@ describe('Diff Module', () => {
             expect(diff).toBe('');
         });
 
-        // Add more tests here
-    });
-
-    describe('Diff Module', () => {
-        describe('graphicalDiff', () => {
-            it('should return an empty object when both Equipment objects are identical', () => {
-                // Mock Date
-                jest.spyOn(Date, 'now').mockImplementationOnce(() => new Date('2023-09-08T19:00:13.958Z').valueOf());
-
-                // Create two identical Equipment objects
-                const equipment1 = new Equipment('Server1', 'Server', '', {}, []);
-                const equipment2 = new Equipment('Server1', 'Server', '', {}, []);
-
-                // Log the objects for debugging
-                console.log('equipment1:', JSON.stringify(equipment1, null, 2));
-                console.log('equipment2:', JSON.stringify(equipment2, null, 2));
-
-                // Perform the diff
-                const diff = graphicalDiff(equipment1, equipment2);
-
-                // Log the diff for debugging
-                console.log('diff:', JSON.stringify(diff, null, 2));
-
-                // Expect the diff to be an empty object
-                expect(diff).toEqual({});
-            });
-
-            // Add more tests here
+        it('should return a non-empty string when Equipment objects are different', () => {
+            equipment2.updateDetails('Server2');
+            const diff = textualDiff(equipment1, equipment2);
+            expect(diff).not.toBe('');
         });
     });
 
+    // Graphical Diff Tests
+    describe('graphicalDiff', () => {
+        it('should return an empty object when both Equipment objects are identical', () => {
+            const diff = graphicalDiff(equipment1, equipment2);
+            expect(diff).toEqual({});
+        });
 
-    afterAll(() => {
-        jest.restoreAllMocks();
+        it('should return a non-empty object when Equipment objects are different', () => {
+            equipment2.updateDetails('Server2');
+            const diff = graphicalDiff(equipment1, equipment2);
+            expect(diff).not.toEqual({});
+        });
+
+        it('should correctly identify removed properties', () => {
+            equipment1.updateDetails(undefined, undefined, undefined, { oldProp: 'oldValue' });
+            const diff = graphicalDiff(equipment1, equipment2);
+            expect(diff.userDefinedProperties.oldProp.status).toBe('removed');
+        });
+
+        it('should correctly identify added properties', () => {
+            equipment2.updateDetails(undefined, undefined, undefined, { newProp: 'newValue' });
+            const diff = graphicalDiff(equipment1, equipment2);
+            if (diff && diff.userDefinedProperties && diff.userDefinedProperties['newProp__added']) {
+                expect(diff.userDefinedProperties['newProp__added'].status).toBe('added');
+            } else {
+                expect(true).toBe(false); // Indicate that the test has failed
+            }
+        });
+
+    });
+
+    afterEach(() => {
+        jest.spyOn(Date, 'now').mockRestore();
     });
 });
