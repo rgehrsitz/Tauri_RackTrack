@@ -1,10 +1,15 @@
 <template>
-  <footer class="app-footer">
-    <div class="container">
-      <p>Status: <span id="status-message">Ready</span></p>
-      <!-- Add more UI elements like error messages, etc. here -->
-    </div>
-  </footer>
+  <v-footer app color="secondary" dark>
+    <v-container>
+      <v-row>
+        <v-col cols="12">
+          <div class="text-center">
+            © RackTrack - {{ new Date().getFullYear() }}
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-footer>
 </template>
 
 <script lang="ts">
@@ -17,19 +22,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.app-footer {
-  background-color: #333;
-  color: white;
-  padding: 1rem;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-}
+/* Add any additional styling here */
 </style>

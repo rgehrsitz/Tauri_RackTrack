@@ -1,8 +1,11 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import MainBody from './components/MainBody.vue';
-import Equipment from './components/Equipment.vue';
-import Diff from './components/Diff.vue';
+import EquipmentList from './components/EquipmentList.vue';
+import Diff from './components/DiffView.vue';
 import GitFunctions from './components/GitFunctions.vue';
+import FileFunctions from './components/FileFunctions.vue';
+import Settings from './components/Settings.vue';
+// ... import other components
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -12,12 +15,12 @@ const routes: Array<RouteRecordRaw> = [
     },
     {
         path: '/equipment',
-        name: 'Equipment',
-        component: Equipment
+        name: 'EquipmentList',
+        component: EquipmentList
     },
     {
         path: '/diff',
-        name: 'Diff',
+        name: 'DiffView',
         component: Diff
     },
     {
@@ -25,7 +28,16 @@ const routes: Array<RouteRecordRaw> = [
         name: 'GitFunctions',
         component: GitFunctions
     },
-    // Add more routes here
+    {
+        path: '/file',
+        name: 'FileFunctions',
+        component: FileFunctions
+    },
+    {
+        path: '/settings',
+        name: 'Settings',
+        component: Settings
+    }
 ];
 
 const router = createRouter({

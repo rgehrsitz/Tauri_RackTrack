@@ -1,6 +1,7 @@
 <template>
   <div class="main-body">
-    <router-view></router-view>
+    <h2>Welcome to RackTrack</h2>
+    <p>This is the main content area. Navigate using the left sidebar to access different functionalities.</p>
   </div>
 </template>
 
@@ -14,8 +15,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.main-content {
-  margin-left: 200px; /* Same as the width of the left nav bar */
-  padding: 16px;
+.main-body {
+  padding: 20px;
 }
 </style>

@@ -1,32 +1,24 @@
 <template>
-  <header class="app-header">
-    <div class="container">
-      <h1>RackTrack</h1>
-      <!-- Add more UI elements like menus, tabs, etc. here -->
-    </div>
-  </header>
+  <v-app-bar app color="primary" dark>
+    <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-toolbar-title>RackTrack</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <!-- Add more UI elements like menus, tabs, etc. here -->
+  </v-app-bar>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
   name: 'Header',
-  // Add any component-specific logic here
+  setup() {
+    const drawer = ref(false);
+    return { drawer };
+  },
 });
 </script>
 
 <style scoped>
-.app-header {
-  background-color: #333;
-  color: white;
-  padding: 1rem;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-}
+/* Add any additional styling here */
 </style>
