@@ -1,8 +1,8 @@
 import { Equipment } from '../models/equipment';
 import { textualDiff, graphicalDiff } from './diff';
 
-jest.mock('uuidv4', () => ({
-    uuid: jest.fn(() => 'fixed-uuid'),
+jest.mock('uuid', () => ({
+    v4: jest.fn(() => 'fixed-uuid'),
 }));
 
 jest.spyOn(Date, 'now').mockImplementation(() => 1631294163057);

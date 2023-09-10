@@ -11,12 +11,15 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { FileService } from '../backend/services/fileService';
+import { useEquipmentStore } from '../stores/equipmentStore';
+import { Equipment } from '../backend/models/equipment';
 
 export default defineComponent({
   name: 'FileFunctions',
   setup() {
     const fileContent = ref<string | null>(null);
     const filePath = 'C:/Users/rober/Documents/racktrack/test_equipment.json'; // Replace with the actual file path
+    const equipmentStore = useEquipmentStore();
 
     const createNewFile = async () => {
       const content = { message: 'Hello, world!' };
@@ -28,6 +31,8 @@ export default defineComponent({
       const content = await FileService.openFile(filePath);
       if (content) {
         fileContent.value = JSON.stringify(content, null, 2);
+        const rootEquipment = Equipment.fromJSON(fileContent.value);
+        equipmentStore.setRootEquipment(rootEquipment);
       }
     };
 
@@ -35,6 +40,8 @@ export default defineComponent({
       if (fileContent.value) {
         const content = JSON.parse(fileContent.value);
         await FileService.saveFile(filePath, content);
+        const rootEquipment = Equipment.fromJSON(fileContent.value);
+        equipmentStore.setRootEquipment(rootEquipment);
       }
     };
 

@@ -2,9 +2,9 @@
   <v-navigation-drawer app>
     <v-list>
       <v-list-item v-for="route in routes" :key="route.name" :to="route.path">
-        <v-list-item-icon>
+        <template v-slot:prepend>
           <v-icon>{{ route.icon }}</v-icon>
-        </v-list-item-icon>
+        </template>
         <v-list-item-title>{{ route.name }}</v-list-item-title>
       </v-list-item>
     </v-list>

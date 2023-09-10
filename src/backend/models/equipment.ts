@@ -1,4 +1,4 @@
-import { uuid as generateUuid } from 'uuidv4';
+import { v4 as uuidv4 } from 'uuid';
 
 interface UserDefinedProperties {
     [key: string]: any;
@@ -35,7 +35,7 @@ export class Equipment {
         dateTimeCreated?: Date,
         dateTimeUpdated?: Date
     ) {
-        this.uuid = uuid || generateUuid();
+        this.uuid = uuid || uuidv4();
         this.name = name;
         this.description = description;
         this.type = type;
