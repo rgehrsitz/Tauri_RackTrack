@@ -16,9 +16,9 @@ import { Equipment } from '../backend/models/equipment';
 
 export default defineComponent({
   name: 'FileFunctions',
-  setup() {
+  setup () {
     const fileContent = ref<string | null>(null);
-    const filePath = 'C:/Users/rober/Documents/racktrack/test_equipment.json'; // Replace with the actual file path
+    const filePath = 'C:/Users/rober/Documents/racktrack/test_equipment_2.json'; // Replace with the actual file path
     const equipmentStore = useEquipmentStore();
 
     const createNewFile = async () => {

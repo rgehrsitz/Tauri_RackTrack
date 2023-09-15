@@ -38,6 +38,26 @@ const handleItemClick = (item: Equipment, columnIndex: number) => {
   border-right: 1px solid #ccc;
   padding: 10px;
   min-width: 200px;
+  flex: 1;
+  /* Distributes the width equally among columns */
+  max-width: calc(100% / 5);
+  /* Assuming a maximum of 5 columns without shrinking */
+  overflow: hidden;
+  /* Ensures content doesn't overflow the column */
+}
+
+/* Hide all columns except the last 5 */
+.column:nth-child(n+6) {
+  display: none;
+}
+
+/* Style to show that there are hidden columns */
+.miller-columns::before {
+  content: '...';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .item {
@@ -45,10 +65,15 @@ const handleItemClick = (item: Equipment, columnIndex: number) => {
   cursor: pointer;
   border: 1px solid transparent;
   transition: background-color 0.3s;
+  white-space: nowrap;
+  /* Prevents the text from wrapping to the next line */
+  overflow: hidden;
+  /* Hides the overflowing text */
+  text-overflow: ellipsis;
+  /* Adds an ellipsis (...) to the end of the overflowing text */
 }
 
 .item:hover {
   background-color: #f5f5f5;
   border: 1px solid #ccc;
-}
-</style>
+}</style>
