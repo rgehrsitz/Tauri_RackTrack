@@ -1,67 +1,119 @@
-<template>
-  <div class="miller-columns">
-    <div v-if="rootEquipment" v-for="(column, index) in displayedColumns.slice(0, 3)" :key="index" class="column">
-      <div v-for="item in column" :key="item.uuid" @click="selectItem(item, index)" class="item" v-tooltip="item.name">
-        {{ item.name }}
-      </div>
-    </div>
-
-    <div v-if="displayedColumns.length > 6" class="column-hidden-indicator">
-      ...
-    </div>
-
-    <div v-if="rootEquipment" v-for="(column, index) in displayedColumns.slice(-3)" :key="index" class="column">
-      <div v-for="item in column" :key="item.uuid" class="item" v-tooltip="item.name">
-        {{ item.name }}
-      </div>
-    </div>
-
-    <div v-else class="empty-column">
-      No file open.
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { Equipment } from "../backend/models/equipment"
+import { ref, onMounted } from 'vue';
+import { Equipment } from '../backend/models/equipment';
+//import { useEquipmentStore } from '../stores/equipmentStore';
 
-const rootEquipment = ref<Equipment | null>(null)
-const actualColumns = ref<Equipment[][]>([])
-const columns = computed(() => rootEquipment.value ? [[rootEquipment.value]] : [])
+const props = defineProps<{
+  equipment: Equipment
+}>();
 
-watch(columns, (newVal) => {
-  actualColumns.value = newVal
-})
+//const store = useEquipmentStore();
 
-const displayedColumns = computed(() => {
-  // Logic to determine which columns to display based on actualColumns.value
-  return actualColumns.value
-})
-
-const selectItem = (item: Equipment, columnIndex: number) => {
-  // Logic to handle item selection and column display
-  if (item.children && item.children.length > 0) {
-    actualColumns.value = actualColumns.value.slice(0, columnIndex + 1).concat([item.children])
-  } else {
-    actualColumns.value = actualColumns.value.slice(0, columnIndex + 1)
-  }
+interface Column {
+  id: string;
+  name: string;
+  width: number;
+  truncated: boolean;
 }
+
+interface BreakColumn {
+  break: boolean;
+}
+
+type Columns = Column | BreakColumn;
+
+const columns = ref<Columns[]>([]);
+
+const truncatedText = ref('');
+const hoveredColumn = ref<Column | null>(null);
+
+const maxColumns = 10;
+const columnWidth = 150;
+
+onMounted(() => {
+  calculateColumns();
+});
+
+const calculateColumns = () => {
+
+  columns.value = [];
+
+  const addColumn = (equipment: Equipment) => {
+
+    const col: Column = {
+      id: equipment.uuid,
+      name: equipment.name,
+      width: columnWidth,
+      truncated: false
+    };
+
+    columns.value.push(col);
+
+    equipment.children.forEach(addColumn);
+
+    if (columns.value.length >= maxColumns) {
+      columns.value.push({
+        break: true
+      });
+    }
+
+  };
+
+  addColumn(props.equipment);
+
+};
+
+const handleMouseover = (column: Column) => {
+  truncatedText.value = column.name;
+  hoveredColumn.value = column;
+}
+
+const handleMouseleave = () => {
+  truncatedText.value = '';
+  hoveredColumn.value = null;
+}
+
+function isBreakColumn (column: Columns): column is BreakColumn {
+  return (column as BreakColumn).break !== undefined;
+}
+
 </script>
 
-<style scoped>
-/* ... (existing styles) */
+<template>
+  <v-container fluid>
 
-.item {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px;
-}
+    <v-row no-gutters>
 
-.empty-column {
-  padding: 20px;
-  text-align: center;
-  color: #aaa;
-}
+      <v-col v-for="(column, index) in columns" :key="index">
+
+        <template v-if="isBreakColumn(column)">
+          <v-sheet class="text-center py-6">
+            ...
+          </v-sheet>
+        </template>
+
+        <template v-else>
+
+          <div :style="{ width: column.width + 'px' }" @mouseover="handleMouseover(column)"
+            @mouseleave="handleMouseleave">
+
+            <div class="text-truncate" :title="truncatedText">
+              {{ column.name }}
+            </div>
+
+            <!-- tooltip -->
+
+          </div>
+
+        </template>
+
+      </v-col>
+
+    </v-row>
+
+  </v-container>
+</template>
+
+<style>
+/* Styles */
 </style>
