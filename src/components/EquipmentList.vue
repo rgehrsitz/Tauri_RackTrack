@@ -19,7 +19,7 @@ export default defineComponent({
   components: {
     MillerColumns
   },
-  setup() {
+  setup () {
     const equipmentStore = useEquipmentStore();
 
     const addEquipment = () => {
@@ -45,5 +45,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Add your styles here */
+div {
+  max-width: 100%;
+  /* Ensures the EquipmentList doesn't exceed its parent's width */
+  overflow-x: auto;
+  /* Adds a horizontal scrollbar if the content overflows */
+}
 </style>
