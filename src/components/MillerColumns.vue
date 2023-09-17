@@ -2,7 +2,8 @@
   <div class="miller-columns">
     <div v-for="(column, index) in columns" :key="index" class="column" v-show="!hiddenColumns.includes(index)"
       @click="handleColumnClick(index)">
-      <div v-for="item in column" :key="item.uuid" @click="handleItemClick(item, index)" class="item">
+      <div v-for="item in column" :key="item.uuid" @click="handleItemClick(item, index)"
+        :class="{ 'selected-item': item.uuid === selectedNodes[index] }" class="item">
         {{ item.name }}
       </div>
     </div>
@@ -10,12 +11,27 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { Equipment } from '../backend/models/equipment';
 
 const hiddenColumns = ref<number[]>([]); // Array to keep track of hidden columns
+const selectedNodes = ref<string[]>([]);
+
+
+const updateHiddenColumns = () => {
+  const columns = document.querySelectorAll('.column');
+  let totalWidth = 0;
+  hiddenColumns.value = [];
+  columns.forEach((column, index) => {
+    totalWidth += column.clientWidth;
+    if (columns[0]?.parentElement?.clientWidth && totalWidth > columns[0].parentElement.clientWidth) {
+      hiddenColumns.value.push(index);
+    }
+  });
+};
 
 onMounted(() => {
+  updateHiddenColumns;
   const columns = document.querySelectorAll('.column');
   let totalWidth = 0;
   columns.forEach((column, index) => {
@@ -30,7 +46,8 @@ const handleColumnClick = (index: number) => {
   if (hiddenColumns.value.includes(index)) {
     const clickedColumn = columns.value.splice(index, 1)[0];
     columns.value.push(clickedColumn);
-    hiddenColumns.value = []; // Reset hidden columns and recalculate
+    hiddenColumns.value = []; // Reset hidden columns
+    updateHiddenColumns(); // Recalculate hidden columns
   }
 };
 
@@ -47,20 +64,30 @@ const handleItemClick = (item: Equipment, columnIndex: number) => {
   } else {
     columns.value = columns.value.slice(0, columnIndex + 1);
   }
+
+  // Update the selected node for the current column
+  selectedNodes.value[columnIndex] = item.uuid;
+
+  // Remove any selected nodes for subsequent columns
+  selectedNodes.value = selectedNodes.value.slice(0, columnIndex + 1);
 };
+
+watch(columns, updateHiddenColumns);
+
 </script>
 
 <style scoped>
 .miller-columns {
   display: flex;
   overflow: auto;
+  overflow-x: hidden;
 }
 
 .column {
   border-right: 1px solid #ccc;
   padding: 10px;
   min-width: 75px;
-  flex: 1 1 auto;
+  flex: 1 1 0%;
   /* Distributes the width equally among columns */
   max-width: 250px;
   /* Assuming a maximum of 5 columns without shrinking */
@@ -99,5 +126,12 @@ const handleItemClick = (item: Equipment, columnIndex: number) => {
 .item:hover {
   background-color: #f5f5f5;
   border: 1px solid #ccc;
+}
+
+.selected-item {
+  background-color: #e0e0e0;
+  /* Light gray background */
+  border: 1px solid #ccc;
+  /* Border to distinguish the selected item */
 }
 </style>
