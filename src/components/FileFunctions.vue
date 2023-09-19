@@ -1,12 +1,24 @@
 <template>
   <div>
     <h1>File Operations</h1>
-    <button @click="createNewFile">Create New File</button>
+    <button @click="showNewFileDialog = true">Create New File</button>
     <button @click="openFile">Open File</button>
     <button @click="saveFile">Save File</button>
     <button @click="saveAs">Save As</button>
-    <button @click="saveCopyAs">Save a Copy As</button>
     <pre>{{ fileContent }}</pre>
+  </div>
+
+  <!-- New File Dialog -->
+  <div v-if="showNewFileDialog">
+    <h2>Create New File</h2>
+    <label>
+      Name: <input v-model="newFileName" />
+    </label>
+    <label>
+      Description: <input v-model="newFileDescription" />
+    </label>
+    <button @click="createNewFile">Create</button>
+    <button @click="showNewFileDialog = false">Cancel</button>
   </div>
 </template>
 
@@ -19,12 +31,10 @@ import { FileService } from '../backend/services/fileService';
 
 const fileContent = ref<string | null>(null);
 const equipmentStore = useEquipmentStore();
+const showNewFileDialog = ref(false);
+const newFileName = ref('');
+const newFileDescription = ref('');
 
-const createNewFile = () => {
-  // Open a modal or form to get the necessary information from the user
-  // For simplicity, we'll just set a default content here
-  fileContent.value = JSON.stringify({ message: 'Hello, world!' }, null, 2);
-};
 
 async function openDialog (): Promise<string | null> {
   try {
@@ -52,9 +62,7 @@ async function openDialog (): Promise<string | null> {
 const openFile = async () => {
   const selectedFilePath = await openDialog();
   if (selectedFilePath) {
-    console.log('Selected file path:', selectedFilePath);
     const normalizedFilePath = normalizeFilePath(selectedFilePath);
-    console.log('Normalized file path:', normalizedFilePath);
     const content = await FileService.openFile(normalizedFilePath);
     if (content) {
       fileContent.value = JSON.stringify(content, null, 2);
@@ -62,8 +70,6 @@ const openFile = async () => {
       equipmentStore.setRootEquipment(rootEquipment);
     }
   }
-
-
 };
 
 const saveFile = async () => {
@@ -86,17 +92,25 @@ const saveAs = async () => {
   }
 };
 
-const saveCopyAs = async () => {
-  const filePath = await dialog.save();
-  if (filePath && fileContent.value) {
-    const content = JSON.parse(fileContent.value);
-    await FileService.saveFile(filePath, content);
-  }
-};
-
 function normalizeFilePath (filePath: string): string {
   return filePath.replace(/\\\\/g, '/');
 }
+
+const createNewFile = () => {
+  const newEquipment = new Equipment(
+    newFileName.value,
+    'Custom', // You can change this to a dynamic type if needed
+    newFileDescription.value
+  );
+
+  // Update the store or local state with the new data
+  equipmentStore.setRootEquipment(newEquipment);
+
+  // Reset the dialog and input fields
+  showNewFileDialog.value = false;
+  newFileName.value = '';
+  newFileDescription.value = '';
+};
 
 </script>
 
